@@ -1,2 +1,3 @@
-reflex==0.5.3
-reflex-local-auth
+flask
+flask-sqlalchemy
+mysql-python
