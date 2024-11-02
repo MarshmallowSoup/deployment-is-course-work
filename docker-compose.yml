@@ -1,6 +1,6 @@
 services:
   app:
-    image: lysetskyiv/deployment-is-course-work:v1.0
+    image: lysetskyiv/deployment-is-course-work:latest
     environment:
       DB_TYPE: "mysql"
       DB_HOST: "mysql"
