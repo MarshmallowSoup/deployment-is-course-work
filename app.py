@@ -35,6 +35,12 @@ class Poll(db.Model):
     question = db.Column(db.String(90))
     stamp = db.Column(db.DateTime)
     options = db.relationship('Option', backref='option', lazy='dynamic', overlaps="poll,options")
+    
+    # Custom constructor for Poll
+    def __init__(self, name, question, stamp=None):
+        self.name = name
+        self.question = question
+        self.stamp = stamp if stamp else datetime.utcnow()
 
 class Option(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -43,13 +49,19 @@ class Option(db.Model):
     poll = db.relationship('Poll', backref=db.backref('poll', lazy='dynamic'), overlaps="poll,options")
     votes = db.Column(db.Integer)
 
+    # Custom constructor for Option
+    def __init__(self, text, poll, votes=0):
+        self.text = text
+        self.poll = poll
+        self.votes = votes
+
 @app.route('/')
 @app.route('/index.html')
 def index():
     hostname = socket.gethostname()
     
     # Query the poll object within the request context
-    poll = Poll.query.first()  # This fetcahes the first poll from the database
+    poll = Poll.query.first()  # This fetches the first poll from the database
     
     # Pass the hostname and poll to the template
     return render_template('index.html', hostname=hostname, poll=poll)
@@ -112,10 +124,10 @@ if __name__ == '__main__':
                 with open(os.path.join(basedir, 'seeds/seed_data.json')) as file:
                     seed_data = json.load(file)
                     print("Start a new poll")
-                    poll = Poll(seed_data['poll'], seed_data['question'])
+                    poll = Poll(name=seed_data['poll'], question=seed_data['question'])
                     db.session.add(poll)
-                    for i in seed_data['options']:
-                        option = Option(i, poll, 0)
+                    for option_text in seed_data['options']:
+                        option = Option(text=option_text, poll=poll, votes=0)
                         db.session.add(option)
                     db.session.commit()
             except Exception as e:

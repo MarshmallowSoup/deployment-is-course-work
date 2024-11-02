@@ -1,0 +1,39 @@
+services:
+  app:
+    image: lysetskyiv/deployment-is-course-work:v1.0
+    environment:
+      DB_TYPE: "mysql"
+      DB_HOST: "mysql"
+      DB_PORT: "3306"
+      DB_NAME: "votedb"
+      DB_USER: "user"
+      DB_PASS: "password"
+    volumes:
+      - ./data:/app/data
+      - ./seeds:/app/seeds
+      - ./logs:/app/logs
+    ports:
+      - "80:8000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: "votedb"
+      MYSQL_USER: "user"
+      MYSQL_PASSWORD: "password"
+      MYSQL_ROOT_PASSWORD: "rootpassword"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  mysql_data:
