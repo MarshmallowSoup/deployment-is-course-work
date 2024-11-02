@@ -1,7 +1,7 @@
 # Using official python runtime base image
 FROM python:3.13
 
-
+# Define build arguments for database configuration
 ARG DB_TYPE="mysql"
 ARG DB_HOST="localhost"
 ARG DB_PORT="3306"
@@ -21,16 +21,16 @@ ENV DB_PASS=${DB_PASS}
 WORKDIR /app
 
 # Install requirements.txt
-ADD requirements.txt /app/requirements.txt
+COPY requirements.txt /app/requirements.txt
 RUN pip install -r requirements.txt
 
-# Copy code from the current folder to /app inside the container
-ADD . /app
+# Copy code and necessary directories to the /app inside the container
+COPY . /app
+COPY data /app/data
+COPY seeds /app/seeds
+COPY logs /app/logs
 
-# Mount external volumes for logs and data
-VOLUME ["/app/data", "/app/seeds", "/app/logs"]
-
-# Expose the port server listen to
+# Expose the port server listens to
 EXPOSE 8000
 
 # Define command to be run when launching the container

@@ -8,10 +8,6 @@ services:
       DB_NAME: "votedb"
       DB_USER: "user"
       DB_PASS: "password"
-    volumes:
-      - ./data:/app/data
-      - ./seeds:/app/seeds
-      - ./logs:/app/logs
     ports:
       - "80:8000"
     depends_on:
